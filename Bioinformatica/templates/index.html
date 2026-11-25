@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coletor de metadados NCBI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#E8EBEA;
+  --superficie:#F4F6F5;
+  --tinta:#16262A;
+  --tinta-fraca:#5B6E72;
+  --linha:#C5CFCE;
+  --agua:#0E5F63;
+  --agua-clara:#D3E4E3;
+  --ambar:#B4681B;
+  --alerta:#8C2F1E;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--papel);
+  color:var(--tinta);
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.5;
+}
+header{
+  border-bottom:2px solid var(--tinta);
+  padding:22px 32px 16px;
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  flex-wrap:wrap;
+}
+header h1{
+  margin:0;
+  font-size:23px;
+  font-weight:600;
+  letter-spacing:-0.015em;
+}
+header p{
+  margin:0;
+  color:var(--tinta-fraca);
+  font-size:14px;
+}
+main{
+  display:grid;
+  grid-template-columns:minmax(340px,3fr) minmax(320px,4fr);
+  gap:0;
+  min-height:calc(100vh - 74px);
+}
+.painel{padding:26px 32px}
+.painel--esq{border-right:1px solid var(--linha)}
+h2{
+  font-size:13px;
+  font-weight:600;
+  margin:0 0 10px;
+  color:var(--tinta-fraca);
+}
+.bloco{margin-bottom:26px}
+label{
+  display:block;
+  font-size:13px;
+  color:var(--tinta-fraca);
+  margin-bottom:5px;
+}
+input[type=text],input[type=email],input[type=number],textarea{
+  width:100%;
+  padding:9px 11px;
+  border:1px solid var(--linha);
+  border-radius:3px;
+  background:var(--superficie);
+  color:var(--tinta);
+  font-family:inherit;
+  font-size:14px;
+}
+input:disabled{
+  background:var(--papel);
+  color:var(--tinta-fraca);
+  opacity:.5;
+  cursor:not-allowed;
+}
+input:focus,textarea:focus{
+  outline:2px solid var(--agua);
+  outline-offset:-1px;
+  border-color:var(--agua);
+}
+.busca{
+  display:flex;
+  gap:7px;
+  margin-bottom:7px;
+  align-items:flex-start;
+}
+.busca input{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  border-left:3px solid var(--agua);
+}
+.remover{
+  border:1px solid var(--linha);
+  background:var(--superficie);
+  color:var(--tinta-fraca);
+  border-radius:3px;
+  width:32px;
+  height:36px;
+  flex:0 0 auto;
+  cursor:pointer;
+  font-size:17px;
+  line-height:1;
+}
+.remover:hover{color:var(--alerta);border-color:var(--alerta)}
+.link-acao{
+  background:none;
+  border:none;
+  color:var(--agua);
+  font-family:inherit;
+  font-size:13px;
+  padding:2px 0;
+  cursor:pointer;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.linha-dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checkbox{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  color:var(--tinta);
+  margin-top:14px;
+}
+.checkbox input{width:16px;height:16px;accent-color:var(--agua)}
+.checkbox--junto{margin-top:8px;font-size:13.5px}
+.executar{
+  width:100%;
+  padding:13px;
+  background:var(--tinta);
+  color:var(--papel);
+  border:none;
+  border-radius:3px;
+  font-family:inherit;
+  font-size:15px;
+  font-weight:500;
+  cursor:pointer;
+}
+.executar:hover:not(:disabled){background:var(--agua)}
+.executar:disabled{background:var(--tinta-fraca);cursor:progress}
+.vazio{
+  color:var(--tinta-fraca);
+  font-size:14px;
+  border:1px dashed var(--linha);
+  border-radius:3px;
+  padding:22px;
+  text-align:center;
+}
+.registro{
+  background:var(--superficie);
+  border:1px solid var(--linha);
+  border-radius:3px;
+  padding:12px 14px;
+  max-height:210px;
+  overflow-y:auto;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;
+  line-height:1.7;
+}
+.registro div{color:var(--tinta-fraca)}
+.registro .etapa{color:var(--tinta);font-weight:500}
+.registro .erro{color:var(--alerta)}
+.registro .progresso{color:var(--ambar)}
+.registro .aviso{color:var(--ambar);font-weight:500}
+.cobertura{margin-top:6px}
+.barra-linha{
+  display:grid;
+  grid-template-columns:112px 1fr 74px;
+  align-items:center;
+  gap:11px;
+  padding:5px 0;
+  border-bottom:1px solid var(--linha);
+}
+.barra-linha:last-child{border-bottom:none}
+.barra-nome{font-size:13.5px}
+.barra-trilho{height:9px;background:var(--agua-clara);border-radius:2px;overflow:hidden}
+.barra-preenchida{height:100%;background:var(--agua)}
+.barra-preenchida.baixa{background:var(--ambar)}
+.barra-valor{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;
+  color:var(--tinta-fraca);
+  text-align:right;
+}
+.total{
+  font-size:30px;
+  font-weight:600;
+  letter-spacing:-0.02em;
+  margin:0;
+}
+.total span{
+  font-size:14px;
+  font-weight:400;
+  color:var(--tinta-fraca);
+  margin-left:7px;
+  letter-spacing:0;
+}
+.baixar{
+  display:inline-block;
+  margin-top:16px;
+  padding:11px 20px;
+  background:var(--agua);
+  color:#fff;
+  border-radius:3px;
+  text-decoration:none;
+  font-weight:500;
+  font-size:14.5px;
+}
+.baixar:hover{background:var(--tinta)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--linha)}
+th{color:var(--tinta-fraca);font-weight:500;font-size:12px}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.aviso{
+  background:var(--agua-clara);
+  border-left:3px solid var(--agua);
+  padding:11px 14px;
+  font-size:13.5px;
+  border-radius:0 3px 3px 0;
+  margin-top:14px;
+}
+.erro-caixa{
+  background:#F6E3E0;
+  border-left:3px solid var(--alerta);
+  color:var(--alerta);
+  padding:11px 14px;
+  font-size:13.5px;
+  border-radius:0 3px 3px 0;
+}
+textarea{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;
+  min-height:190px;
+  resize:vertical;
+}
+.salvo{color:var(--agua);font-size:13px;margin-left:10px}
+.nota{
+  font-size:12.5px;
+  color:var(--tinta-fraca);
+  margin:6px 0 8px;
+  line-height:1.45;
+}
+.abas{display:flex;gap:2px;border-bottom:1px solid var(--linha);margin-bottom:4px}
+.aba{
+  background:none;
+  border:none;
+  border-bottom:2px solid transparent;
+  padding:6px 11px;
+  font-family:inherit;
+  font-size:13.5px;
+  color:var(--tinta-fraca);
+  cursor:pointer;
+  margin-bottom:-1px;
+}
+.aba.ativa{color:var(--tinta);border-bottom-color:var(--agua);font-weight:500}
+.aba:hover{color:var(--tinta)}
+.marca-indicio{
+  display:inline-block;
+  background:var(--ambar);
+  color:#fff;
+  font-size:11px;
+  padding:1px 6px;
+  border-radius:2px;
+  margin-left:7px;
+}
+.evidencia{font-size:12.5px;color:var(--tinta-fraca);line-height:1.45}
+@media (max-width:880px){
+  main{grid-template-columns:1fr}
+  .painel--esq{border-right:none;border-bottom:1px solid var(--linha)}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Coletor de metadados NCBI</h1>
+  <p>Busca no SRA, junta os atributos do BioSample e devolve uma planilha harmonizada</p>
+</header>
+
+<main>
+<section class="painel painel--esq">
+  <div class="bloco">
+    <h2>Buscas</h2>
+    <div id="lista-buscas"></div>
+    <button class="link-acao" onclick="adicionarBusca()">Adicionar outra busca</button>
+  </div>
+
+  <div class="bloco">
+    <h2>Acesso ao NCBI</h2>
+    <label for="email">E-mail (exigido pelo NCBI)</label>
+    <input type="email" id="email" placeholder="voce@dominio.com">
+    <div class="linha-dupla" style="margin-top:12px">
+      <div>
+        <label for="api_key">Chave da API (opcional)</label>
+        <input type="text" id="api_key" placeholder="deixe vazio se nao tiver">
+      </div>
+      <div>
+        <label for="limite">Quantas por busca</label>
+        <input type="number" id="limite" value="20" min="1">
+        <div class="checkbox checkbox--junto">
+          <input type="checkbox" id="todos" onchange="alternarTodos()">
+          <label for="todos" style="margin:0">Todas as disponíveis</label>
+        </div>
+      </div>
+    </div>
+    <div class="checkbox">
+      <input type="checkbox" id="manter_bruto">
+      <label for="manter_bruto" style="margin:0">Incluir colunas com o valor original</label>
+    </div>
+    <div class="checkbox">
+      <input type="checkbox" id="buscar_texto">
+      <label for="buscar_texto" style="margin:0">Procurar indícios no texto dos estudos</label>
+    </div>
+    <p class="nota">A busca textual lê título e resumo do BioProject e dos artigos vinculados no PubMed. Deixa a coleta mais lenta.</p>
+  </div>
+
+  <button class="executar" id="botao" onclick="coletar()">Coletar amostras</button>
+
+  <div class="bloco" style="margin-top:30px">
+    <h2>Dicionários <button class="link-acao" onclick="alternarConfig()" id="alterna-config">mostrar</button></h2>
+    <div id="area-config" style="display:none">
+      <div class="abas">
+        <button class="aba ativa" data-nome="vocabulario" onclick="trocarAba('vocabulario')">Campos</button>
+        <button class="aba" data-nome="valores" onclick="trocarAba('valores')">Valores</button>
+        <button class="aba" data-nome="indicios" onclick="trocarAba('indicios')">Indícios</button>
+      </div>
+      <p class="nota" id="nota-config"></p>
+      <textarea id="config"></textarea>
+      <button class="link-acao" onclick="salvarConfig()">Salvar</button>
+      <span class="salvo" id="salvo"></span>
+    </div>
+  </div>
+</section>
+
+<section class="painel">
+  <div class="bloco" id="area-log" style="display:none">
+    <h2>Andamento</h2>
+    <div class="registro" id="registro"></div>
+  </div>
+
+  <div id="area-inicial" class="vazio">
+    Escreva uma busca, informe seu e-mail e clique em coletar.<br>
+    Comece com o limite baixo para conferir se a busca traz o que você espera.
+  </div>
+
+  <div id="area-resultado" style="display:none">
+    <p class="total" id="total"></p>
+    <a class="baixar" id="baixar" href="#">Baixar planilha</a>
+
+    <div class="bloco" style="margin-top:28px">
+      <h2>Cobertura por campo</h2>
+      <div class="cobertura" id="cobertura"></div>
+      <p class="nota" id="legenda-indicio" style="display:none">A marca em âmbar conta amostras sem o dado declarado, mas com indício encontrado no texto do estudo. São candidatas a conferir, não confirmações — a planilha traz o trecho de evidência e a fonte.</p>
+    </div>
+
+    <div class="bloco" id="area-nao-mapeados" style="display:none">
+      <h2>Campos fora do vocabulário</h2>
+      <table id="tabela-nao-mapeados"></table>
+      <div class="aviso">Escolha onde cada um encaixa e acrescente na aba <strong>Campos</strong> como <strong>campo_final,sinonimo</strong>.</div>
+    </div>
+
+    <div class="bloco" id="area-valores-livres" style="display:none">
+      <h2>Valores ainda não padronizados</h2>
+      <table id="tabela-valores-livres"></table>
+      <div class="aviso">Acrescente na aba <strong>Valores</strong> como <strong>campo,valor_final,sinonimo</strong>.</div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+let tarefaAtual = null;
+let intervalo = null;
+
+function adicionarBusca(valor){
+  const lista = document.getElementById('lista-buscas');
+  const div = document.createElement('div');
+  div.className = 'busca';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = valor || '';
+  input.placeholder = '"Astyanax mexicanus"[Organism] AND "RNA-Seq"[Strategy]';
+  const botao = document.createElement('button');
+  botao.className = 'remover';
+  botao.textContent = '\u00d7';
+  botao.title = 'Remover busca';
+  botao.onclick = () => {
+    div.remove();
+    if(!document.querySelector('#lista-buscas .busca')) adicionarBusca();
+  };
+  div.appendChild(input);
+  div.appendChild(botao);
+  lista.appendChild(div);
+  input.focus();
+}
+
+function lerBuscas(){
+  return Array.from(document.querySelectorAll('#lista-buscas input'))
+    .map(i => i.value.trim()).filter(Boolean);
+}
+
+function alternarTodos(){
+  const marcado = document.getElementById('todos').checked;
+  const campo = document.getElementById('limite');
+  campo.disabled = marcado;
+  const rotulo = document.querySelector('label[for=limite]');
+  rotulo.style.opacity = marcado ? '.5' : '1';
+}
+
+function lerLimite(){
+  if(document.getElementById('todos').checked) return 0;
+  const valor = parseInt(document.getElementById('limite').value, 10);
+  return (isNaN(valor) || valor < 1) ? 20 : valor;
+}
+
+async function coletar(){
+  const buscas = lerBuscas();
+  const email = document.getElementById('email').value.trim();
+  const botao = document.getElementById('botao');
+
+  document.getElementById('area-inicial').style.display = 'none';
+  document.getElementById('area-resultado').style.display = 'none';
+  document.getElementById('area-log').style.display = 'block';
+  document.getElementById('registro').innerHTML = '';
+
+  botao.disabled = true;
+  botao.textContent = 'Coletando...';
+
+  const resposta = await fetch('/api/coletar', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      buscas: buscas,
+      email: email,
+      api_key: document.getElementById('api_key').value.trim(),
+      limite: lerLimite(),
+      manter_bruto: document.getElementById('manter_bruto').checked,
+      buscar_texto: document.getElementById('buscar_texto').checked
+    })
+  });
+
+  const dados = await resposta.json();
+  if(dados.erro){
+    mostrarErro(dados.erro);
+    return;
+  }
+  tarefaAtual = dados.tarefa_id;
+  intervalo = setInterval(verificar, 900);
+}
+
+function mostrarErro(texto){
+  const registro = document.getElementById('registro');
+  registro.innerHTML = '<div class="erro">' + texto + '</div>';
+  const botao = document.getElementById('botao');
+  botao.disabled = false;
+  botao.textContent = 'Coletar amostras';
+}
+
+async function verificar(){
+  const resposta = await fetch('/api/status/' + tarefaAtual);
+  const dados = await resposta.json();
+
+  const registro = document.getElementById('registro');
+  registro.innerHTML = dados.log
+    .map(l => '<div class="' + l.tipo + '">' + l.texto + '</div>').join('');
+  registro.scrollTop = registro.scrollHeight;
+
+  if(dados.estado === 'rodando') return;
+
+  clearInterval(intervalo);
+  const botao = document.getElementById('botao');
+  botao.disabled = false;
+  botao.textContent = 'Coletar amostras';
+
+  if(dados.estado === 'erro') return;
+  mostrarResultado(dados.resumo);
+}
+
+function mostrarResultado(resumo){
+  document.getElementById('area-resultado').style.display = 'block';
+  document.getElementById('total').innerHTML =
+    resumo.total + ' <span>amostras coletadas</span>';
+  document.getElementById('baixar').href = '/api/download/' + tarefaAtual;
+
+  document.getElementById('cobertura').innerHTML = resumo.cobertura.map(c => `
+    <div class="barra-linha">
+      <div class="barra-nome">${c.campo}${c.indicios ? `<span class="marca-indicio">+${c.indicios}</span>` : ''}</div>
+      <div class="barra-trilho">
+        <div class="barra-preenchida ${c.pct < 40 ? 'baixa' : ''}" style="width:${c.pct}%"></div>
+      </div>
+      <div class="barra-valor">${c.preenchidos}/${c.total}</div>
+    </div>`).join('');
+
+  const temIndicio = resumo.cobertura.some(c => c.indicios);
+  document.getElementById('legenda-indicio').style.display = temIndicio ? 'block' : 'none';
+
+  const areaValores = document.getElementById('area-valores-livres');
+  if(resumo.valores_livres && resumo.valores_livres.length){
+    areaValores.style.display = 'block';
+    document.getElementById('tabela-valores-livres').innerHTML =
+      '<tr><th>Campo</th><th>Valor encontrado</th><th>Amostras</th></tr>' +
+      resumo.valores_livres.map(v =>
+        `<tr><td>${v.campo}</td><td>${v.valor_encontrado}</td><td>${v.ocorrencias}</td></tr>`
+      ).join('');
+  } else {
+    areaValores.style.display = 'none';
+  }
+
+  const area = document.getElementById('area-nao-mapeados');
+  if(resumo.nao_mapeados.length){
+    area.style.display = 'block';
+    document.getElementById('tabela-nao-mapeados').innerHTML =
+      '<tr><th>Atributo encontrado</th><th>Amostras</th><th>Exemplos</th></tr>' +
+      resumo.nao_mapeados.slice(0,25).map(n =>
+        `<tr><td>${n.atributo_encontrado}</td><td>${n.ocorrencias}</td><td>${n.exemplos_de_valor}</td></tr>`
+      ).join('');
+  } else {
+    area.style.display = 'none';
+  }
+}
+
+const NOTAS = {
+  vocabulario:'Une nomes de atributo diferentes num campo só. Uma linha por sinônimo: campo_final,sinonimo',
+  valores:'Padroniza os valores dentro de cada campo. Precisa bater exatamente: campo,valor_final,sinonimo',
+  indicios:'Termos procurados no texto dos estudos quando a busca textual está ligada. Aceita expressão regular: campo,padrao'
+};
+let abaAtual = 'vocabulario';
+
+async function alternarConfig(){
+  const area = document.getElementById('area-config');
+  const alterna = document.getElementById('alterna-config');
+  if(area.style.display === 'none'){
+    await carregarConfig(abaAtual);
+    area.style.display = 'block';
+    alterna.textContent = 'ocultar';
+  } else {
+    area.style.display = 'none';
+    alterna.textContent = 'mostrar';
+  }
+}
+
+async function carregarConfig(nome){
+  const resposta = await fetch('/api/config/' + nome);
+  const dados = await resposta.json();
+  document.getElementById('config').value = dados.conteudo || '';
+  document.getElementById('nota-config').textContent = NOTAS[nome];
+}
+
+async function trocarAba(nome){
+  abaAtual = nome;
+  document.querySelectorAll('.aba').forEach(b =>
+    b.classList.toggle('ativa', b.dataset.nome === nome));
+  await carregarConfig(nome);
+}
+
+async function salvarConfig(){
+  await fetch('/api/config/' + abaAtual, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({conteudo: document.getElementById('config').value})
+  });
+  const salvo = document.getElementById('salvo');
+  salvo.textContent = 'Salvo';
+  setTimeout(() => salvo.textContent = '', 2200);
+}
+
+adicionarBusca('"B chromosome"[All Fields] AND txid7898[Organism:exp]');
+</script>
+</body>
+</html>

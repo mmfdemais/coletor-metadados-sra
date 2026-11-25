@@ -1,0 +1,49 @@
+campo_final,sinonimo
+population,population
+population,pop
+population,populations
+population,population name
+population,ecotype
+population,morph
+population,breed
+population,cave population
+population,surface population
+local_coleta,geo_loc_name
+local_coleta,geographic location
+local_coleta,locality
+local_coleta,collection site
+local_coleta,lat lon
+growth,growth protocol
+growth,growth control
+growth,growth ctr
+growth,growth condition
+growth,growth conditions
+growth,rearing
+growth,rearing protocol
+growth,culture condition
+growth,treatment
+sex,sex
+sex,gender
+sex,phenotypic sex
+tecido,tissue
+tecido,organ
+tecido,cell type
+tecido,source tissue
+tecido,isolation source
+tecido,sample type
+tecido,body site
+genotipo,genotype
+genotipo,strain
+genotipo,cultivar
+genotipo,genetic background
+cromossomo_b,b chromosome
+cromossomo_b,b chromosomes
+cromossomo_b,b chr
+cromossomo_b,supernumerary chromosome
+cromossomo_b,supernumerary chromosomes
+cromossomo_b,accessory chromosome
+cromossomo_b,karyotype
+idade,age
+idade,developmental stage
+idade,dev stage
+idade,life stage

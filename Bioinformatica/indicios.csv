@@ -1,0 +1,26 @@
+campo,padrao
+cromossomo_b,b chromosome
+cromossomo_b,b chromosomes
+cromossomo_b,b-chromosome
+cromossomo_b,supernumerary chromosome
+cromossomo_b,supernumerary chromosomes
+cromossomo_b,accessory chromosome
+cromossomo_b,accessory chromosomes
+cromossomo_b,cromossomo b
+population,\bPach[oó]n\b
+population,\bMolino\b
+population,\bTinaja\b
+population,\bChica\b
+population,\bCurva\b
+population,\bSabinos\b
+population,\bJineo\b
+population,\bEscondido\b
+population,\bRio Choy\b
+population,\bChoy\b
+population,\bsurface\b
+population,\bcavefish\b
+population,\bcave\b
+genotipo,\bTexas\b
+genotipo,\bBoston\b
+sex,\bfemale\b
+sex,\bmale\b

@@ -1,0 +1,51 @@
+campo,valor_final,sinonimo
+sex,Macho,male
+sex,Macho,m
+sex,Macho,males
+sex,Macho,masculino
+sex,Femea,female
+sex,Femea,f
+sex,Femea,females
+sex,Femea,feminino
+sex,(vazio),not collected
+sex,(vazio),missing
+sex,(vazio),not applicable
+sex,(vazio),na
+sex,(vazio),unknown
+sex,(vazio),pooled
+tecido,Rim cefalico,head kidney
+tecido,Rim cefalico,head kideny
+tecido,Rim cefalico,anterior kidney
+tecido,Rim cefalico,pronephros
+tecido,Gonada,gonad
+tecido,Gonada,gonads
+tecido,Gonada,testis
+tecido,Gonada,ovary
+tecido,Figado,liver
+tecido,Baco,spleen
+tecido,Musculo,muscle
+tecido,Sangue,blood
+tecido,Cerebro,brain
+tecido,Nadadeira,fin
+tecido,Nadadeira,caudal fin
+tecido,Corpo inteiro,whole body
+tecido,Corpo inteiro,whole organism
+cromossomo_b,Presente,present
+cromossomo_b,Presente,yes
+cromossomo_b,Presente,positive
+cromossomo_b,Presente,b+
+cromossomo_b,Ausente,absent
+cromossomo_b,Ausente,no
+cromossomo_b,Ausente,negative
+cromossomo_b,Ausente,b0
+population,Cavernicola,cave
+population,Cavernicola,cavefish
+population,Cavernicola,cave population
+population,Superficie,surface
+population,Superficie,surface fish
+population,Superficie,surface population
+population,Cativeiro,captive
+population,Cativeiro,captive bred
+population,Cativeiro,laboratory
+population,Selvagem,wild
+population,Selvagem,wild caught
